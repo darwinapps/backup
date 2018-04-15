@@ -9,22 +9,15 @@
         "application": {
             "root": "/var/www/html",
             "exclude": [
-                 ".git",
-                 "httpdocs/atrex",
-                 "httpdocs/fedex_labels",
-                 "httpdocs/system/storage/cache",
-                 "httpdocs/system/storage/logs",
-                 "httpdocs/image/cache",
-                 "httpdocs/image/catalog",
-                 "httpdocs/image/floralshow"
+                 ".git"
             ]
         }
     },
     "databases": {
         "application": {
-            "db_name": "opencart",
-            "db_user": "opencart",
-            "db_password": "opencart"
+            "db_name": "db_name",
+            "db_user": "db_user",
+            "db_password": "db_password"
         }
     }
 }
