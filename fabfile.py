@@ -114,7 +114,7 @@ def backup_mysql():
             if config.get('retain', 0):
                 key = Key(bucket)
                 key.key = '%s/%s' % (env.archive_dir, os.path.basename(_v['archive']))
-                s3_upload(key, v['archive'])
+                s3_upload(key, _v['archive'])
 
             if v.get('alias'):
                 key = Key(bucket)
