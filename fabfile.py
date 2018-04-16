@@ -8,6 +8,7 @@ import sys
 
 from fabric.api import *
 from boto.s3.connection import S3Connection
+from boto.s3.connection import OrdinaryCallingFormat
 from boto.s3.key import Key
 
 with open(os.getenv('CONFIG', 'config.json')) as json_data_file:
@@ -26,7 +27,7 @@ def connect():
     if connect.bucket is not None:
         return connect.bucket
 
-    conn = S3Connection(config['AWS_ACCESS_KEY_ID'], config['AWS_SECRET_ACCESS_KEY'], calling_format=boto.s3.connection.OrdinaryCallingFormat())
+    conn = S3Connection(config['AWS_ACCESS_KEY_ID'], config['AWS_SECRET_ACCESS_KEY'], calling_format=OrdinaryCallingFormat())
 
     try:
         connect.bucket = conn.get_bucket(config['AWS_BUCKET'])
