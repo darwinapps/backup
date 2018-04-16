@@ -4,7 +4,7 @@ import copy
 import socket
 import tempfile
 import json
-import sys
+import pipes
 
 from fabric.api import *
 from boto.s3.connection import S3Connection
@@ -106,20 +106,22 @@ def backup_mysql():
     uploads = []
     for k, v in config.get('databases', {}).iteritems():
         if config.get('retain', 0) or v.get('alias'):
-            v['archive'] = '%s/%s.sql.gz' % (TEMP_DIR, k)
-            local('mysqldump --single-transaction --quick --net_buffer_length=10240 -u%(db_user)s -p\'%(db_password)s\' %(db_name)s | gzip > %(archive)s' % v)
+            _v = copy.copy(v);
+            _v['archive'] = '%s/%s.sql.gz' % (TEMP_DIR, k)
+            _v['db_password'] = pipes.quote(_v['db_password'])
+            local('mysqldump --single-transaction --quick --net_buffer_length=10240 -u%(db_user)s -p%(db_password)s %(db_name)s | gzip > %(archive)s' % _v)
 
             if config.get('retain', 0):
                 key = Key(bucket)
-                key.key = '%s/%s' % (env.archive_dir, os.path.basename(v['archive']))
+                key.key = '%s/%s' % (env.archive_dir, os.path.basename(_v['archive']))
                 s3_upload(key, v['archive'])
 
             if v.get('alias'):
                 key = Key(bucket)
-                key.key = v.get('alias')
-                s3_upload(key, v['archive'])
+                key.key = _v.get('alias')
+                s3_upload(key, _v['archive'])
 
-            local('rm "%s"' % v['archive'])
+            local('rm "%s"' % _v['archive'])
 
 @task
 def backup():
