@@ -26,7 +26,7 @@ def connect():
     if connect.bucket is not None:
         return connect.bucket
 
-    conn = S3Connection(config['AWS_ACCESS_KEY_ID'], config['AWS_SECRET_ACCESS_KEY'])
+    conn = S3Connection(config['AWS_ACCESS_KEY_ID'], config['AWS_SECRET_ACCESS_KEY'], calling_format=boto.s3.connection.OrdinaryCallingFormat())
 
     try:
         connect.bucket = conn.get_bucket(config['AWS_BUCKET'])
@@ -103,7 +103,7 @@ def backup_mysql():
     require('prefix')
     bucket = connect()
     uploads = []
-    for k, v in env.backup_dbs.iteritems():
+    for k, v in config.get('databases', {}).iteritems():
         if config.get('retain', 0) or v.get('alias'):
             v['archive'] = '%s/%s.sql.gz' % (TEMP_DIR, k)
             local('mysqldump --single-transaction --quick --net_buffer_length=10240 -u%(db_user)s -p\'%(db_password)s\' %(db_name)s | gzip > %(archive)s' % v)
