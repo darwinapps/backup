@@ -123,6 +123,6 @@ def backup_mysql():
 
 @task
 def backup():
-    cleanup()
     backup_files()
     backup_mysql()
+    cleanup()
