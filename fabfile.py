@@ -75,52 +75,50 @@ def cleanup():
                 print "Deleting %s\n" % i.key
                 i.delete()
 
+def s3_upload(key, filename, retries = 3):
+    while (retries > 0):
+        try:
+            key.set_contents_from_filename(filename)
+            break
+        except Exception, e:
+            print str(e)
+            print "Retrying %s\n" % key.key
+            retries -= 1;
+
 def backup_files():
     require('prefix')
     bucket = connect()
     uploads = []
-    for k, v in config.get('directories', {}).iteritems():
-        archive = '%s/%s.tar.gz' % (TEMP_DIR, k);
-        excluded = list(map(lambda x: ("--exclude \"%s\"" % x), v.get('exclude', [])))
-        local('tar -zcf %s %s -C "%s" "%s"' % (archive,  " ".join(excluded), os.path.dirname(v['root']), os.path.basename(v['root'])))
-        uploads.append(archive)
-
-    for archive in uploads:
-        key = Key(bucket)
-        key.key = '%s/%s' % (env.archive_dir, os.path.basename(archive))
-        i = 10;
-        while (i > 0):
-            try:
-                key.set_contents_from_filename(archive)
-                local('rm %s' % archive)
-                break
-            except Exception, e:
-                print str(e)
-                print "Retrying %s\n" % key.key
-                i -= 1;
+    if config.get('retain', 0):
+        for k, v in config.get('directories', {}).iteritems():
+            archive = '%s/%s.tar.gz' % (TEMP_DIR, k);
+            excluded = list(map(lambda x: ("--exclude \"%s\"" % x), v.get('exclude', [])))
+            local('tar -zcf %s %s -C "%s" "%s"' % (archive,  " ".join(excluded), os.path.dirname(v['root']), os.path.basename(v['root'])))
+            key = Key(bucket)
+            key.key = '%s/%s' % (env.archive_dir, os.path.basename(archive))
+            s3_upload(key, archive)
+            local('rm "%s"' % archive)
 
 def backup_mysql():
     require('prefix')
     bucket = connect()
     uploads = []
-    for k, v in config.get('databases', {}).iteritems():
-        v['archive'] = '%s/%s.sql.gz' % (TEMP_DIR, k)
-        local('mysqldump --single-transaction --quick --net_buffer_length=10240 -u%(db_user)s -p\'%(db_password)s\' %(db_name)s | gzip > %(archive)s' % v)
-        uploads.append(v['archive'])
+    for k, v in env.backup_dbs.iteritems():
+        if config.get('retain', 0) or v.get('alias'):
+            v['archive'] = '%s/%s.sql.gz' % (TEMP_DIR, k)
+            local('mysqldump --single-transaction --quick --net_buffer_length=10240 -u%(db_user)s -p\'%(db_password)s\' %(db_name)s | gzip > %(archive)s' % v)
 
-    for archive in uploads:
-        key = Key(bucket)
-        key.key = '%s/%s' % (env.archive_dir, os.path.basename(archive))
-        i = 10;
-        while (i > 0):
-            try:
-                key.set_contents_from_filename(archive)
-                local('rm %s' % archive)
-                break
-            except Exception, e:
-                print str(e)
-                print "Retrying %s\n" % key.key
-                i -= 1;
+            if config.get('retain', 0):
+                key = Key(bucket)
+                key.key = '%s/%s' % (env.archive_dir, os.path.basename(v['archive']))
+                s3_upload(key, v['archive'])
+
+            if v.get('alias'):
+                key = Key(bucket)
+                key.key = v.get('alias')
+                s3_upload(key, v['archive'])
+
+            local('rm "%s"' % v['archive'])
 
 @task
 def backup():
