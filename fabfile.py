@@ -67,7 +67,7 @@ def cleanup():
     result = list(set(result))
     result.sort()
 
-    while len(result) >= config['retain']:
+    while len(result) > config['retain']:
         to_delete.append(result.pop(0))
 
     for prefix in to_delete:
