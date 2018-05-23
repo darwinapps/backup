@@ -27,13 +27,13 @@ def connect():
     if connect.bucket is not None:
         return connect.bucket
 
-    conn = S3Connection(config['AWS_ACCESS_KEY_ID'], config['AWS_SECRET_ACCESS_KEY'], calling_format=OrdinaryCallingFormat())
-
-    try:
-        connect.bucket = conn.get_bucket(config['AWS_BUCKET'])
-    except:
-        connect.bucket = conn.create_bucket(config['AWS_BUCKET'])
-
+    conn = boto.s3.connect_to_region(
+         config['AWS_REGION'],
+         aws_access_key_id=config['AWS_ACCESS_KEY_ID'],
+         aws_secret_access_key=config['AWS_SECRET_ACCESS_KEY'],
+         calling_format=OrdinaryCallingFormat()
+    )
+    connect.bucket = conn.get_bucket(config['AWS_BUCKET'])
     return connect.bucket
 
 def setup_archive_dir():
