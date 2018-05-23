@@ -5,9 +5,9 @@ import socket
 import tempfile
 import json
 import pipes
+import boto
 
 from fabric.api import *
-from boto.s3.connection import S3Connection
 from boto.s3.connection import OrdinaryCallingFormat
 from boto.s3.key import Key
 
