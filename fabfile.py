@@ -41,6 +41,16 @@ def setup_archive_dir():
 
 @task
 def daily():
+    env.prefix = 'custom'
+    setup_archive_dir()
+    
+@task
+def daily():
+    env.prefix = 'hourly'
+    setup_archive_dir()
+    
+@task
+def daily():
     env.prefix = 'daily'
     setup_archive_dir()
 
