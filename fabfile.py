@@ -40,12 +40,12 @@ def setup_archive_dir():
     env.archive_dir = '%s/%s-%s' % (config['environment'], env.prefix, time.strftime('%Y-%m-%d_%H:%M:%S'))
 
 @task
-def daily():
+def custom():
     env.prefix = 'custom'
     setup_archive_dir()
     
 @task
-def daily():
+def hourly():
     env.prefix = 'hourly'
     setup_archive_dir()
     
