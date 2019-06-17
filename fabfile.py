@@ -11,7 +11,8 @@ from fabric.api import *
 from boto.s3.connection import OrdinaryCallingFormat
 from boto.s3.key import Key
 
-with open(os.getenv('CONFIG', 'config.json')) as json_data_file:
+path = os.path.dirname(os.path.realpath(__file__))
+with open(os.getenv('CONFIG', path + '/config.json')) as json_data_file:
     config = json.load(json_data_file)
 
 TEMP_DIR = config.get('TEMP_DIR', tempfile.gettempdir())
