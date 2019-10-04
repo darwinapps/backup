@@ -15,9 +15,11 @@
     },
     "databases": {
         "application": {
+            "docker_container": "container_name",
             "db_name": "db_name",
             "db_user": "db_user",
-            "db_password": "db_password"
+            "db_password": "db_password",
+            "alias": "latest.sql.gz"
         }
     }
 }
