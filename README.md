@@ -4,7 +4,7 @@ This script **fabfile.py** allows to create backups of MySQL databases and files
 
 ------
 
-#### **Backup via SSH**
+### Backup via SSH
 
 **run:**
 
