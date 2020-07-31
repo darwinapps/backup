@@ -35,7 +35,7 @@ fab -f fabfile.py daily backup_via_ssh_to_aws
 
 
 
-### Backup locally
+### Backup locally to AWS
 
 **run:**
 
