@@ -1,24 +1,58 @@
+// Example config for backup MySQL and files via SSH connection to AWS S3
+
+// Run: fab -f fabfile.py daily backup_via_ssh_to_aws
+
 {
-    "AWS_ACCESS_KEY_ID": "",
-    "AWS_SECRET_ACCESS_KEY": "",
-    "AWS_BUCKET": "example-bucket",
+    "GENERIC_SSH": "user_ssh:pass_ssh@ip_ssh:port_ssh",
+    "REMOTE_MYSQL": "user_mysql:pass_mysql@localhost:3306/db_mysql",
+    "FILES_PATH": "/file_path/for/backup",
+
+    "AWS_ACCESS_KEY_ID": "aws_key_id",
+    "AWS_SECRET_ACCESS_KEY": "aws_access_key",
+    "AWS_BUCKET": "aws_bucket",
     "AWS_REGION": "us-east-1",
-    "environment": "development",
-    "retain": 20,
+    "retain": {
+        "hourly": 4,
+        "daily": 7,
+        "weekly": 8,
+        "monthly": 12
+    }
+}
+
+
+
+// Example config for backup MySQL and files locally to AWS S3
+// Run: fab -f fabfile.py daily backup
+
+{
+    "AWS_ACCESS_KEY_ID": "aws_key_id",
+    "AWS_SECRET_ACCESS_KEY": "aws_access_key",
+    "AWS_BUCKET": "aws_bucket",
+    "AWS_REGION": "us-east-1",
+    "retain": {
+        "hourly": 4,
+        "daily": 7,
+        "weekly": 8,
+        "monthly": 12
+    },
+
+
     "directories": {
         "application": {
-            "root": "/var/www/html",
+            "root": "/file_path/for/backup",
             "exclude": [
                  ".git"
             ]
         }
     },
+
+
     "databases": {
         "application": {
-            "docker_container": "container_name",
-            "db_name": "db_name",
-            "db_user": "db_user",
-            "db_password": "db_password",
+            "docker_container": "docker-container-mysql",          // This setting is necessary if MySQL is running in docker
+            "db_name": "db_mysql",
+            "db_user": "user_mysql",
+            "db_password": "pass_mysql",
             "alias": "latest.sql.gz"
         }
     }
