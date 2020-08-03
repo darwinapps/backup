@@ -11,6 +11,7 @@
     "AWS_SECRET_ACCESS_KEY": "aws_access_key",
     "AWS_BUCKET": "aws_bucket",
     "AWS_REGION": "us-east-1",
+    "environment": "production",
     "retain": {
         "hourly": 4,
         "daily": 7,
@@ -29,6 +30,7 @@
     "AWS_SECRET_ACCESS_KEY": "aws_access_key",
     "AWS_BUCKET": "aws_bucket",
     "AWS_REGION": "us-east-1",
+    "environment": "production",
     "retain": {
         "hourly": 4,
         "daily": 7,

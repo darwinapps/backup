@@ -51,7 +51,8 @@ def connect():
 
 def setup_archive_dir():
     # env.archive_dir = '%s/%s-%s' % (config['environment'], env.prefix, time.strftime('%Y-%m-%d_%H:%M:%S'))
-    env.archive_dir = '%s/%s-%s' % (env.prefix, env.prefix, time.strftime('%Y-%m-%d_%H:%M:%S'))
+    # env.archive_dir = '%s/%s-%s' % (env.prefix, env.prefix, time.strftime('%Y-%m-%d_%H:%M:%S'))
+    env.archive_dir = '%s/%s/%s-%s' % (config['environment'], env.prefix, env.prefix, time.strftime('%Y-%m-%d_%H:%M:%S'))
 
 
 @task
@@ -97,7 +98,7 @@ def cleanup():
     to_delete = []
     files = []
     for i in bucket.list():
-        if (i.key.find("%s" % (env.prefix)) == 0):
+        if (i.key.find("%s/%s" % (config['environment'], env.prefix)) == 0):
             result.append(os.path.dirname(i.key))
             files.append(i)
 

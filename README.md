@@ -24,6 +24,7 @@ fab -f fabfile.py daily backup_via_ssh_to_aws
     "AWS_SECRET_ACCESS_KEY": "aws_access_key",
     "AWS_BUCKET": "aws_bucket",
     "AWS_REGION": "us-east-1",
+    "environment": "production",
     "retain": {
         "hourly": 4,
         "daily": 7,
@@ -51,6 +52,7 @@ fab -f fabfile.py daily backup
     "AWS_SECRET_ACCESS_KEY": "aws_access_key",
     "AWS_BUCKET": "aws_bucket",
     "AWS_REGION": "us-east-1",
+    "environment": "production",
     "retain": {
         "hourly": 4,
         "daily": 7,
