@@ -4,7 +4,7 @@ This script **fabfile.py** allows to create backups of MySQL databases and files
 
 ------
 
-#### **Backup via SSH**
+### Backup to AWS via SSH
 
 **run:**
 
@@ -36,7 +36,7 @@ fab -f fabfile.py daily backup_via_ssh_to_aws
 
 
 
-### Backup locally
+### Backup locally to AWS
 
 **run:**
 
