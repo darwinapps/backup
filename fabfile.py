@@ -98,7 +98,7 @@ def cleanup():
     to_delete = []
     files = []
     for i in bucket.list():
-        if (i.key.find("%s/%s" % (config['environment'], env.prefix)) == 0):
+        if (i.key.find("%s/%s/%s" % (config['environment'], env.prefix, env.prefix)) == 0):
             result.append(os.path.dirname(i.key))
             files.append(i)
 
