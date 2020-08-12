@@ -135,9 +135,16 @@ def backup_files():
         archive = '%s/%s.tar.gz' % (TEMP_DIR, k);
         excluded = list(map(lambda x: ("--exclude \"%s\"" % x), v.get('exclude', [])))
         local('tar -zcf %s %s -C "%s" "%s"' % (archive,  " ".join(excluded), os.path.dirname(v['root']), os.path.basename(v['root'])))
+        
         key = Key(bucket)
-        key.key = '%s/%s' % (env.archive_dir, os.path.basename(archive))
+        
+        if v.get('alias'):
+            key.key = v.get('alias')
+        else:
+            key.key = '%s/%s' % (env.archive_dir, os.path.basename(archive))
+        
         s3_upload(key, archive)
+
         local('rm "%s"' % archive)
 
 

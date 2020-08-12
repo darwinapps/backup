@@ -45,6 +45,13 @@
             "exclude": [
                  ".git"
             ]
+        },
+        "uploadfiles": {
+            "root": "/file_path/for/backup/upload_files",
+            "exclude": [
+                 ".git"
+            ],
+            "alias": "latest.tgz"
         }
     },
 
