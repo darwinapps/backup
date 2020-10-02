@@ -47,6 +47,33 @@ fab -f fabfile.py daily backup
 **config.json**
 
 ```
+// Example config for backup MySQL and files via SSH connection to AWS S3
+
+// Run: fab -f fabfile.py daily backup_via_ssh_to_aws
+
+{
+    "GENERIC_SSH": "user_ssh:pass_ssh@ip_ssh:port_ssh",
+    "REMOTE_MYSQL": "user_mysql:pass_mysql@localhost:3306/db_mysql",
+    "FILES_PATH": "/file_path/for/backup",
+
+    "AWS_ACCESS_KEY_ID": "aws_key_id",
+    "AWS_SECRET_ACCESS_KEY": "aws_access_key",
+    "AWS_BUCKET": "aws_bucket",
+    "AWS_REGION": "us-east-1",
+    "environment": "production",
+    "retain": {
+        "hourly": 4,
+        "daily": 7,
+        "weekly": 8,
+        "monthly": 12
+    }
+}
+
+
+
+// Example config for backup MySQL and files locally to AWS S3
+// Run: fab -f fabfile.py daily backup
+
 {
     "AWS_ACCESS_KEY_ID": "aws_key_id",
     "AWS_SECRET_ACCESS_KEY": "aws_access_key",
@@ -67,13 +94,20 @@ fab -f fabfile.py daily backup
             "exclude": [
                  ".git"
             ]
+        },
+        "uploadfiles": {
+            "root": "/file_path/for/backup/upload_files",
+            "exclude": [
+                 ".git"
+            ],
+            "alias": "latest.tgz"
         }
     },
 
 
     "databases": {
         "application": {
-            "docker_container": "docker-container-mysql",  // This setting is necessary if MySQL is running in docker
+            "docker_container": "docker-container-mysql",          // This setting is necessary if MySQL is running in docker
             "db_name": "db_mysql",
             "db_user": "user_mysql",
             "db_password": "pass_mysql",
