@@ -159,10 +159,13 @@ def backup_mysql():
         _v['archive'] = '%s/%s.sql.gz' % (TEMP_DIR, k)
         _v['db_password'] = pipes.quote(_v['db_password'])
 
+        if not v.get('db_host'):
+            _v['db_host'] = '127.0.0.1'
+        
         if v.get('docker_container'):
             local('docker exec %(docker_container)s /usr/bin/mysqldump --single-transaction --quick --net_buffer_length=10240 -u%(db_user)s -p%(db_password)s %(db_name)s | gzip > %(archive)s' % _v)
         else:
-            local('mysqldump --single-transaction --quick --net_buffer_length=10240 -u%(db_user)s -p%(db_password)s %(db_name)s | gzip > %(archive)s' % _v)
+            local('mysqldump --single-transaction --quick --net_buffer_length=10240 -h%(db_host)s -u%(db_user)s -p%(db_password)s %(db_name)s | gzip > %(archive)s' % _v)
 
         # if config.get('retain', 0):
         key = Key(bucket)

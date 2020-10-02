@@ -108,6 +108,7 @@ fab -f fabfile.py daily backup
     "databases": {
         "application": {
             "docker_container": "docker-container-mysql",          // This setting is necessary if MySQL is running in docker
+            "db_host": "host_mysql",                               // This setting is necessary if MySQL has a different address than the local
             "db_name": "db_mysql",
             "db_user": "user_mysql",
             "db_password": "pass_mysql",
