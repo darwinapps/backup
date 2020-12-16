@@ -187,7 +187,7 @@ def put_db_files_to_aws():
     uploads = []
 
     db_file = 'application.sql.gz';
-    site_file = 'files.tgz';
+    site_file = 'application.tar.gz';
 
     key = Key(bucket)
     key.key = '%s/%s' % (env.archive_dir, os.path.basename(db_file))
@@ -215,23 +215,36 @@ def get_latest_db_via_ssh():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    try:
-        ssh.connect(hostname=ssh_host,
-                    username=ssh_username,
-                    password=ssh_password,
-                    port=int(ssh_port))
-    except:
-        print("!!! Errors !!!")
-        print("The connection is not established!")
-        exit(1)
+    if ssh_key:
+        try:
+            ssh.connect(hostname=ssh_host,
+                        username=ssh_username,
+                        key_filename=ssh_key,
+                        port=int(ssh_port),
+                        timeout=3600)
+        except:
+            print("!!! Errors !!!")
+            print("The connection is not established!")
+            exit(1)
+    else:
+        try:
+            ssh.connect(hostname=ssh_host,
+                        username=ssh_username,
+                        password=ssh_password,
+                        port=int(ssh_port),
+                        timeout=3600)
+        except:
+            print("!!! Errors !!!")
+            print("The connection is not established!")
+            exit(1)
 
 
-    cmdssh =    'mysqldump -u'+mysql_username+\
-                ' -p'+mysql_password+\
+    cmdssh =    'export MYSQL_PWD='+mysql_password+';'+\
+                'mysqldump --no-tablespaces -u'+mysql_username+\
                 ' -h'+mysql_host+\
                 ' -P'+mysql_port+\
                 ' '+mysql_base+\
-                '| gzip > application.sql.gz'
+                ' | gzip > application.sql.gz'
 
     print('%s : Dump MySQL DB started ...') % (DateNow())
     
@@ -268,17 +281,30 @@ def get_latest_files_dump_via_ssh():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     
-    try:
-        ssh.connect(hostname=ssh_host,
-                    username=ssh_username,
-                    password=ssh_password,
-                    port=int(ssh_port))
-    except:
-        print("!!! Errors !!!")
-        print("The connection is not established!")
-        exit(1)
+    if ssh_key:
+        try:
+            ssh.connect(hostname=ssh_host,
+                        username=ssh_username,
+                        key_filename=ssh_key,
+                        port=int(ssh_port),
+                        timeout=3600)
+        except:
+            print("!!! Errors !!!")
+            print("The connection is not established!")
+            exit(1)
+    else:
+        try:
+            ssh.connect(hostname=ssh_host,
+                        username=ssh_username,
+                        password=ssh_password,
+                        port=int(ssh_port),
+                        timeout=3600)
+        except:
+            print("!!! Errors !!!")
+            print("The connection is not established!")
+            exit(1)
 
-    cmdssh = 'tar -zcPf files.tgz %s --exclude=\".git\"' % (files_path)
+    cmdssh = 'tar -zcPf application.tar.gz %s --exclude=\".git\"' % (files_path)
     
     print('%s : Site\'s files compression started ...') % (DateNow())
     
@@ -298,10 +324,10 @@ def get_latest_files_dump_via_ssh():
     print('%s : Site\'s files download started ...') % (DateNow())
 
     scp = SCPClient(ssh.get_transport())
-    scp.get('files.tgz')
+    scp.get('application.tar.gz')
     scp.close()
 
-    cmdssh = 'rm -f files.tgz'
+    cmdssh = 'rm -f application.tar.gz'
     ssh.exec_command(cmdssh)
     
     ssh.close()
@@ -315,20 +341,25 @@ def DateNow():
 
 def split_data():
     global files_path
-    global ssh_username, ssh_password, ssh_port, ssh_host
+    global ssh_username, ssh_password, ssh_port, ssh_host, ssh_key
     global mysql_username, mysql_password, mysql_host, mysql_port, mysql_base
 
-    files_path = config.get('FILES_PATH')
-
+    files_path  = config.get('FILES_PATH')
+    ssh_key     = config.get('KEY_FILENAME')
     generic_ssh = config.get('GENERIC_SSH').split('@')
-    ssh_username, ssh_password      = generic_ssh[0].split(':')
+
+    if not ssh_key:
+        ssh_username, ssh_password  = generic_ssh[0].split(':')
+    else:
+        ssh_username                = generic_ssh[0]
+
     ssh_host, ssh_port              = generic_ssh[1].split(':')
 
     remote_mysql = config.get('REMOTE_MYSQL').split('@')
     mysql_username, mysql_password  = remote_mysql[0].split(':')
     mysql_host, mysql_portbase      = remote_mysql[1].split(':')
     mysql_port, mysql_base          = mysql_portbase.split('/')
-    
+
 
 @task
 def backup():
